@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수업 피드백 · 범서고 한국지리</title>
+<style>
+  /* 디자인 토큰: 흰 바탕 + 진한 글자 + 강조색 하나 */
+  :root {
+    --canvas: #ffffff;
+    --surface-soft: #f7f7f7;
+    --surface-strong: #f2f2f2;
+    --ink: #222222;
+    --body: #3f3f3f;
+    --muted: #6a6a6a;
+    --muted-soft: #929292;
+    --hairline: #dddddd;
+    --hairline-soft: #ebebeb;
+    --border-strong: #c1c1c1;
+    --primary: #ff385c;
+    --primary-active: #e00b41;
+    --primary-disabled: #ffd1da;
+    --on-primary: #ffffff;
+    --error: #c13515;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-full: 9999px;
+    --shadow: rgba(0,0,0,0.02) 0 0 0 1px, rgba(0,0,0,0.04) 0 2px 6px 0, rgba(0,0,0,0.1) 0 4px 8px 0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: Inter, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, system-ui, Roboto, "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* 맨 위 막대 */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 80px;
+    padding: 12px 24px;
+    background: var(--canvas);
+    border-bottom: 1px solid var(--hairline);
+  }
+  header h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  header h1::before {
+    content: "";
+    flex: none;
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-full);
+    background: var(--primary);
+  }
+  .header-buttons { display: flex; gap: 8px; flex: none; }
+  .header-buttons button { border-radius: var(--radius-full); min-height: 40px; padding: 8px 16px; font-size: 14px; white-space: nowrap; }
+  #btn-home { border-color: transparent; background: transparent; }
+  #btn-home:hover { background: var(--surface-soft); }
+
+  /* 본문 */
+  main { max-width: 800px; margin: 0 auto; padding: 32px 24px 64px; }
+  section.card {
+    background: var(--canvas);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  #screen-home section.card,
+  #screen-teacher-setpw section.card,
+  #screen-teacher-login section.card {
+    max-width: 480px;
+    margin: 16px auto 24px;
+    box-shadow: var(--shadow);
+    border-color: transparent;
+  }
+  h2 { font-size: 20px; font-weight: 600; line-height: 1.2; letter-spacing: -0.18px; margin: 0 0 16px; }
+  h3 { font-size: 16px; font-weight: 600; line-height: 1.25; margin: 16px 0 4px; }
+  p { margin: 0 0 8px; }
+  a { color: var(--ink); font-weight: 500; text-decoration: underline; }
+
+  /* 입력 칸 */
+  label { display: block; font-size: 14px; font-weight: 500; color: var(--muted); margin: 16px 0 6px; }
+  input[type=text], input[type=password], input[type=number], input[type=url], select {
+    width: 100%;
+    height: 56px;
+    padding: 14px 12px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-sm);
+    background: var(--canvas);
+    color: var(--ink);
+    font: inherit;
+    outline: none;
+  }
+  input:focus, select:focus { border: 2px solid var(--ink); padding: 13px 11px; }
+  input::placeholder { color: var(--muted-soft); }
+  select:disabled { background: var(--surface-soft); color: var(--muted); }
+
+  /* 버튼 */
+  button {
+    font: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.25;
+    min-height: 48px;
+    padding: 14px 24px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--ink);
+    background: var(--canvas);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { background: var(--surface-soft); }
+  button.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+  button.primary:hover { background: var(--primary); }
+  button.primary:active { background: var(--primary-active); border-color: var(--primary-active); }
+  button:disabled { cursor: not-allowed; color: var(--muted-soft); border-color: var(--border-strong); background: var(--canvas); }
+  button.primary:disabled { background: var(--primary-disabled); border-color: var(--primary-disabled); color: var(--on-primary); }
+  form > button[type=submit] { width: 100%; margin-top: 16px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; }
+  .row > button[type=submit] { width: auto; min-height: 56px; }
+  #btn-add-question { min-height: 40px; padding: 8px 16px; font-size: 14px; border-radius: var(--radius-full); border-color: var(--hairline); }
+
+  /* 안내와 오류 */
+  .notice {
+    background: var(--surface-soft);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--body);
+  }
+  .muted { color: var(--muted); font-size: 14px; line-height: 1.43; }
+  .error { color: var(--error); font-size: 14px; min-height: 1.4em; margin: 8px 0 0; }
+
+  /* 목록 */
+  ul.list { list-style: none; padding: 0; margin: 8px 0 0; }
+  ul.list li { border-top: 1px solid var(--hairline-soft); padding: 12px 0; font-size: 14px; line-height: 1.43; }
+  ul.list li:first-child { border-top: 0; }
+  ul.list li strong { font-size: 16px; font-weight: 600; }
+  ol.questions { margin: 4px 0 0; padding-left: 20px; color: var(--body); }
+  #difficulty-box ul { margin: 0 0 8px; padding-left: 20px; color: var(--body); font-size: 14px; }
+
+  /* 반 고르기 (알약 모양) */
+  .filter-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-buttons button {
+    min-height: 40px;
+    padding: 8px 20px;
+    font-size: 14px;
+    border-radius: var(--radius-full);
+    border-color: var(--hairline);
+  }
+  .filter-buttons button[aria-pressed="true"] { background: var(--ink); color: var(--canvas); border-color: var(--ink); }
+
+  /* 수업별 제출 현황 표 */
+  .table-wrap { overflow-x: auto; }
+  table.status-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.43; }
+  .status-table th, .status-table td { padding: 12px 8px; border-bottom: 1px solid var(--hairline); text-align: right; white-space: nowrap; }
+  .status-table th:first-child, .status-table td:first-child { text-align: left; white-space: normal; padding-left: 0; }
+  .status-table th { color: var(--muted); font-weight: 500; }
+  .status-table td:first-child { font-weight: 600; }
+  .status-table tbody tr:last-child td { border-bottom: 0; }
+
+  /* 좁은 화면 */
+  @media (max-width: 743px) {
+    header { padding: 12px 16px; min-height: 64px; }
+    main { padding: 16px 16px 48px; }
+    section.card { padding: 16px; margin-bottom: 16px; }
+  }
+
+  /* ---------- 꾸밈 요소와 가로 배치 ---------- */
+  main { max-width: 1240px; }
+  header h1::before { content: none; }
+  header h1 .mark { width: 32px; height: 32px; flex: none; }
+
+  .eyebrow { font-size: 13px; font-weight: 600; color: var(--primary); letter-spacing: .2px; margin: 0 0 8px; }
+
+  /* 학생 첫 화면: 그림(왼쪽) + 들어가기 창(오른쪽) */
+  .home-layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: center; }
+  .hero { padding: 8px 0; }
+  .hero-title { font-size: 28px; font-weight: 700; line-height: 1.3; letter-spacing: -0.4px; margin: 0 0 12px; }
+  .hero-sub { color: var(--body); margin: 0 0 24px; max-width: 420px; }
+  .hero-art { width: 100%; height: auto; display: block; border-radius: var(--radius-md); box-shadow: var(--shadow); }
+  #screen-home section.card.form-card { max-width: none; margin: 0; }
+  .two-col { display: grid; grid-template-columns: 1fr 1.6fr; gap: 12px; }
+  .hint { margin-top: 6px; }
+
+  /* 카드 제목 + 아이콘 */
+  .card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .card-head h2 { margin: 0; }
+  .icon-badge {
+    flex: none;
+    width: 40px; height: 40px;
+    display: inline-grid; place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--surface-strong);
+    color: var(--ink);
+  }
+  .icon-badge svg { width: 22px; height: 22px; }
+  .icon-badge.accent { background: #ffe8ed; color: var(--primary-active); }
+
+  /* 비밀번호 창 */
+  .auth-card { text-align: left; }
+  .auth-icon {
+    width: 56px; height: 56px;
+    display: grid; place-items: center;
+    border-radius: var(--radius-full);
+    background: #ffe8ed; color: var(--primary-active);
+    margin-bottom: 16px;
+  }
+  .auth-icon svg { width: 28px; height: 28px; }
+
+  /* 선생님 화면 위쪽 띠 */
+  .teacher-banner {
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(120deg, #fff1f4 0%, #eef6fb 100%);
+    overflow: hidden;
+  }
+  .banner-title { font-size: 28px; font-weight: 700; line-height: 1.3; margin: 0 0 16px; }
+  .banner-art { width: 260px; max-width: 40%; height: auto; flex: none; }
+  .teacher-banner .filter-buttons button { background: var(--canvas); }
+  .teacher-banner .filter-buttons button[aria-pressed="true"] { background: var(--ink); color: var(--canvas); }
+
+  /* 숫자 타일 (가로 4칸) */
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .tile {
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    background: var(--canvas);
+  }
+  .tile .tile-label { font-size: 14px; color: var(--muted); margin: 0 0 4px; }
+  .tile .tile-value { font-size: 28px; font-weight: 700; line-height: 1.2; margin: 0; }
+  .tile .tile-value small { font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 4px; }
+  .tile .tile-note { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+  .tile.accent { background: #fff5f7; border-color: #ffd1da; }
+  .tile.accent .tile-value { color: var(--primary-active); }
+
+  /* 현황 카드 가로 배치: 제출 현황 | 아직 피드백하지 않은 글 | 어려웠던 점 */
+  .dash-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 24px; align-items: start; }
+  .setup-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: start; }
+  .dash-grid > .card, .setup-grid > .card { margin-bottom: 0; min-width: 0; }
+
+  .section-divider {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    margin: 40px 0 24px;
+    color: #9fd3ee;
+  }
+  .section-divider svg { width: 80px; height: 10px; }
+  .section-divider span { font-size: 14px; font-weight: 600; color: var(--muted); }
+
+  /* 비어 있을 때 */
+  .empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 0; color: var(--muted); font-size: 14px; text-align: center; }
+  .empty svg { width: 72px; height: 10px; color: #9fd3ee; }
+
+  @media (max-width: 1127px) {
+    .dash-grid { grid-template-columns: 1fr 1fr; }
+    .dash-grid .dash-status { grid-column: 1 / -1; }
+    .setup-grid { grid-template-columns: 1fr 1fr; }
+    .setup-grid > .card:last-child { grid-column: 1 / -1; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 743px) {
+    .home-layout { grid-template-columns: 1fr; gap: 16px; }
+    .hero-title { font-size: 24px; }
+    .dash-grid, .setup-grid { grid-template-columns: 1fr; gap: 16px; }
+    .teacher-banner { padding: 20px; }
+    .banner-art { display: none; }
+    .tiles { gap: 12px; }
+    .tile .tile-value { font-size: 24px; }
+  }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<!-- 아이콘 모음 (화면 곳곳에서 <use>로 불러 씁니다) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="16" fill="#ff385c"/>
+      <path d="M9 9c6 0 8 3 6 6s0 6 8 8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.8-3.3 3.2-5 6-5s5.2 1.7 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14c2.3.2 3.9 1.7 4.5 4"/></g></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20h16"/><path d="M7 16v-5"/><path d="M12 16V7"/><path d="M17 16v-3"/></g></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l2.2-7h11.6L20 13v6H4z"/><path d="M4 13h4.5l1.2 2.5h4.6l1.2-2.5H20"/></g></symbol>
+    <symbol id="i-question" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14v10H10l-4 4v-4H5z"/><path d="M10.2 8.6a1.9 1.9 0 1 1 2.6 1.8c-.6.3-.8.7-.8 1.3"/><circle cx="12" cy="13.4" r=".3" fill="currentColor"/></g></symbol>
+    <symbol id="i-school" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-5 9 5-9 5z"/><path d="M7 12.5V17c1.4 1.3 3 2 5 2s3.6-.7 5-2v-4.5"/></g></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="M7.5 8.5L12 4l4.5 4.5"/><path d="M4 15v4h16v-4"/></g></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 7h11"/><path d="M9 12h11"/><path d="M9 17h11"/><circle cx="5" cy="7" r=".6" fill="currentColor"/><circle cx="5" cy="12" r=".6" fill="currentColor"/><circle cx="5" cy="17" r=".6" fill="currentColor"/></g></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></g></symbol>
+    <symbol id="i-wave" viewBox="0 0 120 12"><path d="M0 6c10 0 10-5 20-5s10 5 20 5 10-5 20-5 10 5 20 5 10-5 20-5 10 5 20 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<header>
+  <h1><svg class="mark" aria-hidden="true"><use href="#i-mark"/></svg>수업 피드백 · 범서고 2학년 한국지리</h1>
+  <div class="header-buttons">
+    <button id="btn-home" type="button">처음으로</button>
+    <button id="btn-go-teacher" type="button">선생님 화면</button>
+  </div>
+</header>
+
+<main>
+  <!-- 첫 화면: 학생 들어가기 창 (실제로 들어가는 기능은 티켓 02에서 만듭니다) -->
+  <div id="screen-home" class="screen">
+    <div class="home-layout">
+      <section class="hero">
+        <p class="eyebrow">한국지리 · 하천 지형과 해안 지형</p>
+        <h2 class="hero-title">오늘 배운 지형,<br>내 말로 정리해요</h2>
+        <p class="hero-sub">이해한 내용과 헷갈린 점을 남기면 선생님이 읽고 피드백을 보내 줘요.</p>
+        <!-- 장식 그림: 산에서 시작한 강이 굽이쳐 바다로 흘러가는 모습 -->
+        <svg class="hero-art" viewBox="0 0 480 300" role="img" aria-label="산에서 바다로 흐르는 강 그림">
+          <defs>
+            <linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff1f4"/>
+              <stop offset="1" stop-color="#eef6fb"/>
+            </linearGradient>
+            <linearGradient id="g-sea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#9fd3ee"/>
+              <stop offset="1" stop-color="#5fb0dc"/>
+            </linearGradient>
+          </defs>
+          <rect width="480" height="300" rx="14" fill="url(#g-sky)"/>
+          <circle cx="392" cy="62" r="40" fill="#ff385c" opacity=".12"/>
+          <circle cx="392" cy="62" r="26" fill="#ff385c" opacity=".9"/>
+          <path d="M0 150 L70 70 L120 118 L175 52 L250 140 L300 104 L360 150 Z" fill="#b7d3bc"/>
+          <path d="M0 150 L70 70 L92 96 L60 150 Z" fill="#9cc2a4"/>
+          <path d="M175 52 L196 78 L162 150 L130 150 Z" fill="#9cc2a4"/>
+          <path d="M160 64 L175 52 L190 70 L182 72 L175 64 L168 72 Z" fill="#ffffff"/>
+          <path d="M0 150 H480 V230 H0 Z" fill="#d7e8c9"/>
+          <path d="M0 196 C120 180 220 214 330 200 S440 186 480 192 V300 H0 Z" fill="#f3e3c3"/>
+          <path d="M0 226 C110 212 210 242 320 228 S440 214 480 220 V300 H0 Z" fill="url(#g-sea)"/>
+          <path d="M176 120 C150 146 214 152 196 172 S130 182 170 200 S236 206 214 222" fill="none" stroke="#5fb0dc" stroke-width="7" stroke-linecap="round"/>
+          <path d="M214 222 L188 236 M214 222 L214 240 M214 222 L240 236" stroke="#5fb0dc" stroke-width="4" stroke-linecap="round"/>
+          <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".85">
+            <path d="M30 256 q12 -8 24 0 t24 0"/>
+            <path d="M300 250 q12 -8 24 0 t24 0"/>
+            <path d="M380 272 q12 -8 24 0 t24 0"/>
+            <path d="M120 276 q12 -8 24 0 t24 0"/>
+          </g>
+          <path d="M380 196 q20 -26 46 -8 q14 -12 34 2" fill="#ead2a5"/>
+          <g fill="#7fae88">
+            <circle cx="40" cy="176" r="9"/><circle cx="54" cy="180" r="7"/>
+            <circle cx="300" cy="172" r="10"/><circle cx="316" cy="178" r="7"/>
+            <circle cx="430" cy="166" r="8"/>
+          </g>
+          <g transform="translate(286 238)">
+            <path d="M0 8 h34 l-6 8 h-22 z" fill="#ffffff"/>
+            <path d="M16 8 V-12 L30 4 Z" fill="#ff385c"/>
+          </g>
+        </svg>
+      </section>
+
+      <section class="card form-card">
+        <div class="card-head"><span class="icon-badge"><svg aria-hidden="true"><use href="#i-school"/></svg></span><h2>학생 들어가기</h2></div>
+        <p class="notice">글에는 민감한 개인 정보를 적지 마세요.</p>
+        <form id="form-student" novalidate>
+          <label for="stu-class">반</label>
+          <select id="stu-class"></select>
+
+          <div class="two-col">
+            <div>
+              <label for="stu-number">번호</label>
+              <input id="stu-number" type="text" inputmode="numeric" placeholder="예: 7">
+            </div>
+            <div>
+              <label for="stu-name">이름</label>
+              <input id="stu-name" type="text" autocomplete="off" placeholder="예: 홍길동">
+            </div>
+          </div>
+
+          <label for="stu-pin">숫자 4자리</label>
+          <input id="stu-pin" type="password" inputmode="numeric" maxlength="4" placeholder="예: 0815">
+          <p class="muted hint">처음이면 기억하기 쉬운 숫자 4자리를 새로 정하세요.</p>
+
+          <p id="stu-error" class="error"></p>
+          <button id="btn-student-enter" type="submit" class="primary">들어가기</button>
+          <p id="stu-pending" class="muted" hidden>입력 확인 완료. 과제 목록은 다음 단계에서 열립니다.</p>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <!-- 선생님 비밀번호 정하기 (처음 한 번) -->
+  <div id="screen-teacher-setpw" class="screen" hidden>
+    <section class="card auth-card">
+      <span class="auth-icon"><svg aria-hidden="true"><use href="#i-lock"/></svg></span>
+      <h2>선생님 비밀번호 정하기</h2>
+      <p class="muted">처음 한 번만 정합니다. 다음부터는 이 비밀번호를 넣어야 선생님 화면이 열립니다.</p>
+      <form id="form-setpw">
+        <label for="setpw-input">새 비밀번호</label>
+        <input id="setpw-input" type="password" autocomplete="new-password">
+        <p id="setpw-error" class="error"></p>
+        <button type="submit" class="primary">비밀번호 정하기</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- 선생님 비밀번호 넣기 -->
+  <div id="screen-teacher-login" class="screen" hidden>
+    <section class="card auth-card">
+      <span class="auth-icon"><svg aria-hidden="true"><use href="#i-lock"/></svg></span>
+      <h2>선생님 화면 열기</h2>
+      <form id="form-login">
+        <label for="login-input">비밀번호</label>
+        <input id="login-input" type="password" autocomplete="current-password">
+        <p id="login-error" class="error"></p>
+        <button type="submit" class="primary">열기</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- 선생님 화면 -->
+  <div id="screen-teacher" class="screen" hidden>
+    <section class="teacher-banner">
+      <div class="banner-text">
+        <p class="eyebrow">선생님 화면</p>
+        <h2 class="banner-title">반별 현황</h2>
+        <div id="class-filter" class="filter-buttons" aria-label="반 고르기"></div>
+      </div>
+      <svg class="banner-art" viewBox="0 0 260 120" aria-hidden="true">
+        <path d="M0 70 L50 22 L84 52 L120 10 L170 66 L210 44 L260 74 V120 H0 Z" fill="#b7d3bc"/>
+        <path d="M0 86 C60 76 120 98 180 88 S240 80 260 84 V120 H0 Z" fill="#f3e3c3"/>
+        <path d="M0 100 C60 92 120 112 180 104 S240 96 260 100 V120 H0 Z" fill="#7cc0e3"/>
+        <path d="M118 30 C100 50 140 54 126 68 S98 78 120 92" fill="none" stroke="#5fb0dc" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="220" cy="24" r="12" fill="#ff385c" opacity=".9"/>
+      </svg>
+    </section>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="dash-grid">
+      <section class="card dash-status">
+        <div class="card-head"><span class="icon-badge"><svg aria-hidden="true"><use href="#i-chart"/></svg></span><h2>수업별 제출 현황</h2></div>
+        <div class="table-wrap">
+          <table class="status-table">
+            <thead>
+              <tr>
+                <th>수업(차시)</th>
+                <th>제출</th>
+                <th>아직</th>
+                <th>피드백 보냄</th>
+                <th>읽음</th>
+                <th>답글</th>
+              </tr>
+            </thead>
+            <tbody id="status-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="icon-badge accent"><svg aria-hidden="true"><use href="#i-inbox"/></svg></span><h2>아직 피드백하지 않은 글</h2></div>
+        <ul id="pending-list" class="list"></ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="icon-badge"><svg aria-hidden="true"><use href="#i-question"/></svg></span><h2>어려웠던 점 모아 보기</h2></div>
+        <p class="muted">이름 없이 보여 줍니다.</p>
+        <div id="difficulty-box"></div>
+      </section>
+    </div>
+
+    <div class="section-divider">
+      <svg aria-hidden="true"><use href="#i-wave"/></svg>
+      <span>수업 준비</span>
+      <svg aria-hidden="true"><use href="#i-wave"/></svg>
+    </div>
+
+    <div class="setup-grid">
+      <section class="card">
+        <div class="card-head"><span class="icon-badge"><svg aria-hidden="true"><use href="#i-users"/></svg></span><h2>반 설정</h2></div>
+        <form id="form-class">
+          <label for="class-name">반 이름</label>
+          <input id="class-name" type="text" placeholder="예: 2학년 3반">
+          <label for="class-size">인원수 (비워도 됨)</label>
+          <input id="class-size" type="number" min="1" step="1" placeholder="예: 28">
+          <p id="class-error" class="error"></p>
+          <button type="submit" class="primary">반 넣기</button>
+        </form>
+        <ul id="class-list" class="list"></ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="icon-badge"><svg aria-hidden="true"><use href="#i-upload"/></svg></span><h2>과제 올리기</h2></div>
+        <form id="form-assignment">
+          <label for="asg-title">제목 (차시 이름)</label>
+          <input id="asg-title" type="text" placeholder="예: 1차시 하천 상류 지형">
+
+          <label>질문 (최대 3개)</label>
+          <div id="asg-questions"></div>
+          <button id="btn-add-question" type="button">＋ 질문 칸 더하기</button>
+
+          <label for="asg-link">참고 링크 (비워도 됨)</label>
+          <input id="asg-link" type="url" placeholder="https://">
+
+          <p id="asg-error" class="error"></p>
+          <button type="submit" class="primary">과제 올리기</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="icon-badge"><svg aria-hidden="true"><use href="#i-list"/></svg></span><h2>과제 목록</h2></div>
+        <ul id="assignment-list" class="list"></ul>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script>
+  // ---------- 저장 (브라우저 localStorage, 키 하나) ----------
+  const STORAGE_KEY = "feedback-site";
+  const MAX_QUESTIONS = 3;
+
+  function emptyData() {
+    return {
+      settings: { teacherPassword: null, classes: [] },
+      assignments: [],
+      students: [],
+      submissions: [],
+      feedbacks: []
+    };
+  }
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return emptyData();
+      return Object.assign(emptyData(), JSON.parse(raw));
+    } catch (e) {
+      return emptyData();
+    }
+  }
+
+  function saveData() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      alert("저장하지 못했습니다. 브라우저 저장 공간을 확인해 주세요.");
+    }
+  }
+
+  function newId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  let data = loadData();
+  let teacherSignedIn = false; // 페이지를 새로 고치거나 [처음으로]를 누르면 끝납니다.
+
+  // ---------- 화면 바꾸기 ----------
+  function show(screenId) {
+    document.querySelectorAll(".screen").forEach(el => { el.hidden = el.id !== screenId; });
+  }
+
+  function goHome() {
+    teacherSignedIn = false;
+    renderStudentForm();
+    show("screen-home");
+  }
+
+  function goTeacher() {
+    if (!data.settings.teacherPassword) {
+      document.getElementById("setpw-input").value = "";
+      document.getElementById("setpw-error").textContent = "";
+      show("screen-teacher-setpw");
+    } else if (!teacherSignedIn) {
+      document.getElementById("login-input").value = "";
+      document.getElementById("login-error").textContent = "";
+      show("screen-teacher-login");
+    } else {
+      renderTeacher();
+      show("screen-teacher");
+    }
+  }
+
+  document.getElementById("btn-home").addEventListener("click", goHome);
+  document.getElementById("btn-go-teacher").addEventListener("click", goTeacher);
+
+  // ---------- 학생 들어가기 창 (입력 확인까지만) ----------
+  function renderStudentForm() {
+    const select = document.getElementById("stu-class");
+    const enterBtn = document.getElementById("btn-student-enter");
+    const errorEl = document.getElementById("stu-error");
+    select.innerHTML = "";
+    errorEl.textContent = "";
+    document.getElementById("stu-pending").hidden = true;
+
+    if (data.settings.classes.length === 0) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "선생님이 아직 반을 만들지 않았어요";
+      select.appendChild(opt);
+      select.disabled = true;
+      enterBtn.disabled = true;
+      return;
+    }
+    select.disabled = false;
+    enterBtn.disabled = false;
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "반을 고르세요";
+    select.appendChild(placeholder);
+    data.settings.classes.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.name;
+      select.appendChild(opt);
+    });
+  }
+
+  document.getElementById("form-student").addEventListener("submit", e => {
+    e.preventDefault();
+    const errorEl = document.getElementById("stu-error");
+    const pendingEl = document.getElementById("stu-pending");
+    const classId = document.getElementById("stu-class").value;
+    const number = document.getElementById("stu-number").value.trim();
+    const name = document.getElementById("stu-name").value.trim();
+    const pin = document.getElementById("stu-pin").value.trim();
+    pendingEl.hidden = true;
+
+    let message = "";
+    if (!classId) message = "반을 골라 주세요.";
+    else if (!/^[1-9][0-9]*$/.test(number)) message = "번호는 1 이상의 숫자로 넣어 주세요.";
+    else if (!name) message = "이름을 넣어 주세요.";
+    else if (!/^[0-9]{4}$/.test(pin)) message = "숫자 4자리를 넣어 주세요.";
+    errorEl.textContent = message;
+    if (message) return;
+
+    // 실제로 들어가서 과제 목록을 여는 기능은 티켓 02에서 만듭니다.
+    pendingEl.hidden = false;
+  });
+
+  // ---------- 선생님 비밀번호 ----------
+  document.getElementById("form-setpw").addEventListener("submit", e => {
+    e.preventDefault();
+    const pw = document.getElementById("setpw-input").value;
+    if (!pw.trim()) {
+      document.getElementById("setpw-error").textContent = "비밀번호를 넣어 주세요.";
+      return;
+    }
+    data.settings.teacherPassword = pw;
+    saveData();
+    teacherSignedIn = true;
+    goTeacher();
+  });
+
+  document.getElementById("form-login").addEventListener("submit", e => {
+    e.preventDefault();
+    const pw = document.getElementById("login-input").value;
+    if (pw !== data.settings.teacherPassword) {
+      document.getElementById("login-error").textContent = "비밀번호가 맞지 않아요.";
+      return;
+    }
+    teacherSignedIn = true;
+    goTeacher();
+  });
+
+  // ---------- 반 설정 ----------
+  document.getElementById("form-class").addEventListener("submit", e => {
+    e.preventDefault();
+    const nameInput = document.getElementById("class-name");
+    const sizeInput = document.getElementById("class-size");
+    const errorEl = document.getElementById("class-error");
+    const name = nameInput.value.trim();
+    const sizeText = sizeInput.value.trim();
+
+    if (!name) { errorEl.textContent = "반 이름을 넣어 주세요."; return; }
+    if (data.settings.classes.some(c => c.name === name)) {
+      errorEl.textContent = "이미 있는 반 이름입니다."; return;
+    }
+    let size = null;
+    if (sizeText) {
+      size = Number(sizeText);
+      if (!Number.isInteger(size) || size < 1) {
+        errorEl.textContent = "인원수는 1 이상의 정수로 넣어 주세요."; return;
+      }
+    }
+
+    data.settings.classes.push({ id: newId(), name, size });
+    saveData();
+    nameInput.value = "";
+    sizeInput.value = "";
+    errorEl.textContent = "";
+    renderTeacher();
+  });
+
+  function renderClasses() {
+    const list = document.getElementById("class-list");
+    list.innerHTML = "";
+    if (data.settings.classes.length === 0) {
+      const li = document.createElement("li");
+      li.className = "muted";
+      li.textContent = "아직 넣은 반이 없습니다.";
+      list.appendChild(li);
+      return;
+    }
+    data.settings.classes.forEach(c => {
+      const li = document.createElement("li");
+      li.textContent = c.size ? `${c.name} · ${c.size}명` : `${c.name} · 인원수 없음`;
+      list.appendChild(li);
+    });
+  }
+
+  // ---------- 과제 올리기 ----------
+  function addQuestionInput() {
+    const box = document.getElementById("asg-questions");
+    if (box.children.length >= MAX_QUESTIONS) return;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "asg-question";
+    input.placeholder = `질문 ${box.children.length + 1}`;
+    input.style.marginBottom = "6px";
+    box.appendChild(input);
+    document.getElementById("btn-add-question").disabled = box.children.length >= MAX_QUESTIONS;
+  }
+
+  function resetAssignmentForm() {
+    document.getElementById("asg-title").value = "";
+    document.getElementById("asg-link").value = "";
+    document.getElementById("asg-questions").innerHTML = "";
+    document.getElementById("asg-error").textContent = "";
+    addQuestionInput();
+  }
+
+  document.getElementById("btn-add-question").addEventListener("click", addQuestionInput);
+
+  document.getElementById("form-assignment").addEventListener("submit", e => {
+    e.preventDefault();
+    const errorEl = document.getElementById("asg-error");
+    const title = document.getElementById("asg-title").value.trim();
+    const questions = Array.from(document.querySelectorAll(".asg-question"))
+      .map(i => i.value.trim())
+      .filter(q => q);
+    const link = document.getElementById("asg-link").value.trim();
+
+    if (!title) { errorEl.textContent = "제목을 넣어 주세요."; return; }
+    if (questions.length === 0) { errorEl.textContent = "질문을 하나 이상 넣어 주세요."; return; }
+    if (link && !/^https?:\/\//i.test(link)) {
+      errorEl.textContent = "참고 링크는 http:// 또는 https://로 시작해야 합니다."; return;
+    }
+
+    data.assignments.push({
+      id: newId(),
+      title,
+      questions: questions.slice(0, MAX_QUESTIONS),
+      link: link || null,
+      createdAt: new Date().toISOString()
+    });
+    saveData();
+    resetAssignmentForm();
+    renderTeacher();
+  });
+
+  function formatTime(iso) {
+    const d = new Date(iso);
+    return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  }
+
+  function renderAssignments() {
+    const list = document.getElementById("assignment-list");
+    list.innerHTML = "";
+    if (data.assignments.length === 0) {
+      const li = document.createElement("li");
+      li.className = "muted";
+      li.textContent = "아직 올린 과제가 없습니다.";
+      list.appendChild(li);
+      return;
+    }
+    // 최근 차시가 위로
+    const sorted = data.assignments.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    sorted.forEach(a => {
+      const li = document.createElement("li");
+
+      const title = document.createElement("strong");
+      title.textContent = a.title;
+      li.appendChild(title);
+
+      const time = document.createElement("span");
+      time.className = "muted";
+      time.textContent = ` · 올린 시각 ${formatTime(a.createdAt)}`;
+      li.appendChild(time);
+
+      const ol = document.createElement("ol");
+      ol.className = "questions";
+      a.questions.forEach(q => {
+        const item = document.createElement("li");
+        item.textContent = q;
+        ol.appendChild(item);
+      });
+      li.appendChild(ol);
+
+      if (a.link) {
+        const p = document.createElement("p");
+        p.className = "muted";
+        p.style.margin = "4px 0 0";
+        const link = document.createElement("a");
+        link.href = a.link;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "참고 링크";
+        p.appendChild(link);
+        li.appendChild(p);
+      }
+      list.appendChild(li);
+    });
+  }
+
+  // ---------- 반별 현황 ----------
+  // 저장 모양 (티켓 02~05에서 채워짐)
+  //   students:    { id, classId, number, name, pin }
+  //   submissions: { id, studentId, assignmentId, understanding, difficulty, submittedAt, editedAt }
+  //   feedbacks:   { id, submissionId, good, next, sentAt, readAt, emoji, reply }
+  let selectedClassId = "all";
+
+  function assignmentsNewestFirst() {
+    return data.assignments.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  function studentById(id) { return data.students.find(s => s.id === id); }
+  function classById(id) { return data.settings.classes.find(c => c.id === id); }
+  function feedbackFor(submissionId) { return data.feedbacks.find(f => f.submissionId === submissionId); }
+
+  // 고른 반(또는 전체)에 속한 제출만
+  function submissionsInScope(assignmentId) {
+    return data.submissions.filter(sub => {
+      if (sub.assignmentId !== assignmentId) return false;
+      const stu = studentById(sub.studentId);
+      if (!stu) return false;
+      return selectedClassId === "all" || stu.classId === selectedClassId;
+    });
+  }
+
+  // 인원수: 고른 반의 인원수. [전체]는 모든 반에 인원수가 있을 때만 더함
+  function headcountInScope() {
+    const classes = selectedClassId === "all"
+      ? data.settings.classes
+      : data.settings.classes.filter(c => c.id === selectedClassId);
+    if (classes.length === 0 || classes.some(c => !c.size)) return null;
+    return classes.reduce((sum, c) => sum + c.size, 0);
+  }
+
+  function renderClassFilter() {
+    const box = document.getElementById("class-filter");
+    box.innerHTML = "";
+    if (selectedClassId !== "all" && !classById(selectedClassId)) selectedClassId = "all";
+    const options = [{ id: "all", name: "전체" }].concat(data.settings.classes);
+    options.forEach(c => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = c.name;
+      btn.setAttribute("aria-pressed", String(c.id === selectedClassId));
+      btn.addEventListener("click", () => { selectedClassId = c.id; renderTeacher(); });
+      box.appendChild(btn);
+    });
+  }
+
+  function renderStatusTable() {
+    const body = document.getElementById("status-body");
+    body.innerHTML = "";
+    const assignments = assignmentsNewestFirst();
+    if (assignments.length === 0) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 6;
+      td.className = "muted";
+      td.textContent = "아직 올린 과제가 없습니다.";
+      tr.appendChild(td);
+      body.appendChild(tr);
+      return;
+    }
+    const headcount = headcountInScope();
+    assignments.forEach(a => {
+      const subs = submissionsInScope(a.id);
+      const fbs = subs.map(s => feedbackFor(s.id)).filter(Boolean);
+      const cells = [
+        a.title,
+        headcount ? `${subs.length} / ${headcount}명` : `${subs.length}명`,
+        headcount ? `${Math.max(headcount - subs.length, 0)}명` : "-",
+        `${fbs.length}명`,
+        `${fbs.filter(f => f.readAt).length}명`,
+        `${fbs.filter(f => f.reply).length}개`
+      ];
+      const tr = document.createElement("tr");
+      cells.forEach(text => {
+        const td = document.createElement("td");
+        td.textContent = text;
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+  }
+
+  function renderPendingList() {
+    const list = document.getElementById("pending-list");
+    list.innerHTML = "";
+    const items = [];
+    assignmentsNewestFirst().forEach(a => {
+      submissionsInScope(a.id)
+        .filter(sub => !feedbackFor(sub.id))
+        .map(sub => ({ a, sub, stu: studentById(sub.studentId) }))
+        .sort((x, y) => {
+          const cx = classById(x.stu.classId)?.name || "";
+          const cy = classById(y.stu.classId)?.name || "";
+          return cx.localeCompare(cy) || x.stu.number - y.stu.number;
+        })
+        .forEach(item => items.push(item));
+    });
+    if (items.length === 0) {
+      const li = document.createElement("li");
+      li.appendChild(emptyState("피드백을 기다리는 글이 없습니다."));
+      list.appendChild(li);
+      return;
+    }
+    items.forEach(({ a, sub, stu }) => {
+      const li = document.createElement("li");
+      const who = document.createElement("strong");
+      const className = classById(stu.classId)?.name || "";
+      who.textContent = `${className} ${stu.number}번 ${stu.name}`;
+      li.appendChild(document.createTextNode(`${a.title} · `));
+      li.appendChild(who);
+      const time = document.createElement("span");
+      time.className = "muted";
+      time.textContent = ` · 낸 시각 ${formatTime(sub.submittedAt)}`;
+      li.appendChild(time);
+      list.appendChild(li);
+    });
+  }
+
+  function shuffled(arr) {
+    const copy = arr.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  function renderDifficulties() {
+    const box = document.getElementById("difficulty-box");
+    box.innerHTML = "";
+    let any = false;
+    assignmentsNewestFirst().forEach(a => {
+      const lines = submissionsInScope(a.id)
+        .map(sub => (sub.difficulty || "").trim())
+        .filter(Boolean);
+      if (lines.length === 0) return;
+      any = true;
+      const h = document.createElement("h3");
+      h.textContent = a.title;
+      box.appendChild(h);
+      const ul = document.createElement("ul");
+      shuffled(lines).forEach(text => {
+        const li = document.createElement("li");
+        li.textContent = text;
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+    });
+    if (!any) box.appendChild(emptyState("아직 모인 어려웠던 점이 없습니다."));
+  }
+
+  // 비어 있을 때 보여 줄 물결 그림 + 문구
+  function emptyState(text) {
+    const div = document.createElement("div");
+    div.className = "empty";
+    div.innerHTML = '<svg aria-hidden="true"><use href="#i-wave"/></svg>';
+    const p = document.createElement("span");
+    p.textContent = text;
+    div.appendChild(p);
+    return div;
+  }
+
+  // 위쪽 숫자 타일 4칸 (고른 반 기준)
+  function renderTiles() {
+    const box = document.getElementById("tiles");
+    box.innerHTML = "";
+    const latest = assignmentsNewestFirst()[0];
+    const headcount = headcountInScope();
+    let pending = 0;
+    let replies = 0;
+    data.assignments.forEach(a => {
+      submissionsInScope(a.id).forEach(sub => {
+        const fb = feedbackFor(sub.id);
+        if (!fb) pending++;
+        else if (fb.reply) replies++;
+      });
+    });
+    const latestCount = latest ? submissionsInScope(latest.id).length : 0;
+    const note = latest ? latest.title : "과제를 올리면 숫자가 생겨요";
+
+    const tiles = [
+      { label: "최근 차시 제출", value: latest ? String(latestCount) : "-", unit: latest && headcount ? `/ ${headcount}명` : (latest ? "명" : ""), note },
+      { label: "아직 내지 않은 사람", value: latest && headcount ? String(Math.max(headcount - latestCount, 0)) : "-", unit: latest && headcount ? "명" : "", note: headcount ? note : "반 인원수를 넣으면 보여요" },
+      { label: "피드백 기다리는 글", value: String(pending), unit: "개", note: "모든 차시", accent: pending > 0 },
+      { label: "받은 답글", value: String(replies), unit: "개", note: "모든 차시" }
+    ];
+    tiles.forEach(t => {
+      const div = document.createElement("div");
+      div.className = t.accent ? "tile accent" : "tile";
+      const label = document.createElement("p");
+      label.className = "tile-label";
+      label.textContent = t.label;
+      const value = document.createElement("p");
+      value.className = "tile-value";
+      value.textContent = t.value;
+      if (t.unit) {
+        const small = document.createElement("small");
+        small.textContent = t.unit;
+        value.appendChild(small);
+      }
+      const n = document.createElement("p");
+      n.className = "tile-note";
+      n.textContent = t.note;
+      div.append(label, value, n);
+      box.appendChild(div);
+    });
+  }
+
+  function renderTeacher() {
+    renderClassFilter();
+    renderTiles();
+    renderStatusTable();
+    renderPendingList();
+    renderDifficulties();
+    renderClasses();
+    renderAssignments();
+  }
+
+  // ---------- 시작 ----------
+  resetAssignmentForm();
+  goHome();
+</script>
+</body>
+</html>

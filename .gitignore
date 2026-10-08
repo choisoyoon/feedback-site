@@ -13,3 +13,6 @@ cards/
 baseline/
 .codex/
 .claude/launch.json
+
+.vercel
+.env*
